@@ -4,7 +4,7 @@
 
 ### Environment Setup
 - [x] Initialize Go module with proper project structure
-- [ ] Setup Docker Compose for local development (PostgreSQL + RabbitMQ)
+- [x] Setup Docker Compose for local development (PostgreSQL + RabbitMQ + 3 microservices)
 - [ ] Create configuration management (YAML + environment variables)
 - [ ] Setup structured JSON logging with required fields
 - [ ] Create graceful shutdown handlers for all services

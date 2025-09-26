@@ -19,13 +19,64 @@ services:
     container_name: ride_hail_rabbitmq
     restart: always
     ports:
-      - "5672:5672"   # основной порт для приложений
-      - "15672:15672" # web-интерфейс
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+
+  ride-service:
+    build:
+      context: .
+      dockerfile: cmd/ride-service/Dockerfile
+    container_name: ride_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "8081:8080"
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: ride_hail
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+
+  driver-service:
+    build:
+      context: .
+      dockerfile: cmd/driver-service/Dockerfile
+    container_name: driver_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "8082:8080"
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: ride_hail
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+
+  admin-service:
+    build:
+      context: .
+      dockerfile: cmd/admin-service/Dockerfile
+    container_name: admin_service
+    depends_on:
+      - postgres
+      - rabbitmq
+    ports:
+      - "8083:8080"
+    environment:
+      DB_HOST: postgres
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: ride_hail
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
 
 volumes:
   postgres_data:
