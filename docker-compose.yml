@@ -6,11 +6,12 @@ services:
     container_name: ride_hail_postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: ride_hail
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -19,11 +20,11 @@ services:
     container_name: ride_hail_rabbitmq
     restart: always
     ports:
-      - "5672:5672"
+      - "${RABBITMQ_PORT}:5672"
       - "15672:15672"
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
@@ -36,12 +37,12 @@ services:
       - postgres
       - rabbitmq
     ports:
-      - "8081:8080"
+      - "${RIDE_SERVICE_PORT}:3000"
     environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: ride_hail
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
 
   driver-service:
@@ -53,12 +54,12 @@ services:
       - postgres
       - rabbitmq
     ports:
-      - "8082:8080"
+      - "${DRIVER_LOCATION_SERVICE_PORT}:3001"
     environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: ride_hail
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
 
   admin-service:
@@ -70,12 +71,12 @@ services:
       - postgres
       - rabbitmq
     ports:
-      - "8083:8080"
+      - "${ADMIN_SERVICE_PORT}:3004"
     environment:
-      DB_HOST: postgres
-      DB_USER: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: ride_hail
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
 
 volumes:
