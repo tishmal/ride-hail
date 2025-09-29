@@ -2,18 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"ride-hail/internal/config"
-	"strconv"
 )
 
 func main() {
-	cfg := config.LoadConfig()
-	fmt.Println(cfg.App.Port)
-	port, err := strconv.Atoi(cfg.App.Port)
-
+	cfg, err := config.LoadConfig()
 	if err != nil {
-		fmt.Println("GG")
+		log.Fatalf("%v", err)
 	}
+	fmt.Println(cfg)
+	fmt.Println(cfg.Services.RideService)
 	fmt.Println("Ride service is running 🚖")
-	fmt.Println(port)
 }
