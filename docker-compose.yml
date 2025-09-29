@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+      CONFIG_PATH: /config/config.yaml
 
     ports:
       - "${DB_PORT}:5432"
@@ -27,6 +28,7 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+      - ./internal/config:/config
 
   ride-service:
     build:
@@ -44,6 +46,9 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
       RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672/
+      CONFIG_PATH: /app/config/config.yaml  # Добавьте эту строку
+    volumes:
+      - ./internal/config:/app/config  # Добавьте монтирование конфига
 
   driver-service:
     build:

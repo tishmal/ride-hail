@@ -9,25 +9,30 @@ import (
 
 type Config struct {
 	App struct {
-		Port int    `yaml:"port"`
+		Port string `yaml:"port"`
 		Env  string `yaml:"env"`
 	} `yaml:"app"`
 	Database struct {
 		Host     string `yaml:"host"`
-		Port     int    `yaml:"port"`
+		Port     string `yaml:"port"`
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 		Name     string `yaml:"name"`
 	} `yaml:"database"`
 	RabbitMQ struct {
 		Host     string `yaml:"host"`
-		Port     int    `yaml:"port"`
+		Port     string `yaml:"port"`
 		User     string `yaml:"user"`
 		Password string `yaml:"password"`
 	} `yaml:"rabbitmq"`
 }
 
-func LoadConfig(path string) *Config {
+func LoadConfig() *Config {
+	path := os.Getenv("CONFIG_PATH")
+	if path == "" {
+		path = "./config/config.yaml" // или "./internal/config/config.yaml"
+	}
+
 	file, err := os.Open(path)
 	if err != nil {
 		log.Fatalf("failed to open config file: %v", err)

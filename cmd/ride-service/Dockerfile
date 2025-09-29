@@ -1,25 +1,28 @@
 # Этап 1: билд
 FROM golang:1.24.2-alpine AS builder
-
 WORKDIR /app
 
 # Копируем модули из корня
-COPY  go.mod ./
+COPY go.mod ./
 RUN go mod download
 
-# Копируем только этот сервис
+# Копируем весь проект
 COPY . .
 
-# Переходим в сервисную папку
-WORKDIR /app/cmd/ride-service
-
-# Собираем бинарник
-RUN go build -o ride-service .
+# Собираем бинарник сервиса
+RUN go build -o ride-service ./cmd/ride-service
 
 # Этап 2: минимальный образ для запуска
 FROM alpine:latest
-
 WORKDIR /app
-COPY --from=builder /app/cmd/ride-service/ride-service .
+
+# Копируем бинарник
+COPY --from=builder /app/ride-service .
+
+# Копируем конфиг файл
+COPY internal/config/config.yaml /app/config/config.yaml
+
+# Указываем переменную окружения
+ENV CONFIG_PATH=/app/config/config.yaml
 
 CMD ["./ride-service"]
