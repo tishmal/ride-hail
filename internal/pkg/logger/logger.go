@@ -7,9 +7,19 @@ import (
 
 var Logger *slog.Logger
 
-func InitLogger() {
+func InitLogger(serviceName string) {
+	level := slog.LevelInfo
+	if os.Getenv("LOG_LEVEL") == "debug" {
+		level = slog.LevelDebug
+	}
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: slog.LevelInfo,
+		Level: level,
 	})
-	Logger = slog.New(handler)
+
+	Logger = slog.New(handler).With(
+		"service", "ride-service",
+		"env", os.Getenv("APP_ENV"),
+		"version", "1.0.0",
+	)
+
 }
