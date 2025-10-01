@@ -29,5 +29,5 @@ COPY --from=builder /app/internal ./internal
 # Устанавливаем переменную окружения для пути к конфигу
 ENV CONFIG_PATH=/app/internal/config/config.yaml
 
-# Запускаем сервис
+# Запускаем сервису
 CMD ["./ride-service"]
