@@ -3,23 +3,77 @@ package logger
 import (
 	"log/slog"
 	"os"
+	"runtime/debug"
+	"time"
 )
 
-var Logger *slog.Logger
+type Logger struct {
+	logger  *slog.Logger
+	service string
+	host    string
+}
 
-func InitLogger(serviceName string) {
-	level := slog.LevelInfo
-	if os.Getenv("LOG_LEVEL") == "debug" {
-		level = slog.LevelDebug
-	}
+func New(service string) *Logger {
+	host, _ := os.Hostname()
+
 	handler := slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
-		Level: level,
+		Level: slog.LevelInfo,
 	})
 
-	Logger = slog.New(handler).With(
-		"service", "ride-service",
-		"env", os.Getenv("APP_ENV"),
-		"version", "1.0.0",
-	)
+	return &Logger{
+		logger:  slog.New(handler),
+		service: service,
+		host:    host,
+	}
+}
 
+func (l *Logger) Info(action, msg, requestID, rideID string, extra ...any) {
+	args := []any{
+		"timestamp", time.Now().Format(time.RFC3339),
+		"level", "INFO",
+		"service", l.service,
+		"hostname", l.host,
+		"action", action,
+		"request_id", requestID,
+		"ride_id", rideID,
+	}
+	args = append(args, extra...)
+
+	l.logger.Info(msg, args...)
+}
+
+func (l *Logger) Debug(action, msg, requestID, rideID string, extra ...any) {
+	args := []any{
+		"timestamp", time.Now().Format(time.RFC3339),
+		"level", "DEBUG",
+		"service", l.service,
+		"hostname", l.host,
+		"action", action,
+		"request_id", requestID,
+		"ride_id", rideID,
+	}
+
+	args = append(args, extra...)
+
+	l.logger.Debug(msg, args...)
+}
+
+func (l *Logger) Error(action, msg, requestID, rideID string, err error, extra ...any) {
+	args := []any{
+		"timestamp", time.Now().Format(time.RFC3339),
+		"level", "ERROR",
+		"service", l.service,
+		"hostname", l.host,
+		"action", action,
+		"request_id", requestID,
+		"ride_id", rideID,
+		"error", map[string]any{
+			"msg":   err.Error(),
+			"stack": string(debug.Stack()),
+		},
+	}
+
+	args = append(args, extra...)
+
+	l.logger.Debug(msg, args...)
 }
