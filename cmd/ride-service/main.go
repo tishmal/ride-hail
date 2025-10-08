@@ -1,21 +1,35 @@
 package main
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
+	"time"
+
 	"ride-hail/internal/config"
-	log "ride-hail/internal/pkg/logger"
+	"ride-hail/internal/pkg/log"
+	"ride-hail/internal/shutdown"
 )
 
 func main() {
 	logger := log.New("ride-service")
-	logger.Info("startup", "ride svc started", "req1", "", "port", 3)
-
 	cfg, err := config.LoadConfig()
 	if err != nil {
-		err := errors.New("load config failed")
-		logger.Error("cfg_load", "", "req-123", "ride-456", err)
+		logger.Error("cfg_load", "failed to load config", "req-123", "ride-456", err)
+		return
 	}
 
-	fmt.Printf("Ride service is running on port %d 🚖\n", cfg.Services.RideService)
+	addr := fmt.Sprintf(":%d", cfg.Services.RideService)
+	server := &http.Server{
+		Addr:    addr,
+		Handler: http.DefaultServeMux,
+	}
+
+	go func() {
+		logger.Info("server_start", fmt.Sprintf("Listening on %s", addr), "req-id", "", "port", cfg.Services.RideService)
+		server.ListenAndServe()
+	}()
+
+	// 👇 Вместо кучи кода
+	shutdown.GracefulStop(server.Shutdown, 10*time.Second)
+	logger.Info("shutdown", "Server stopped gracefully ✅", "req-id", "", "port", cfg.Services.RideService)
 }
