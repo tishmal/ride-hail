@@ -1,0 +1,4 @@
+BEGIN;
+DROP TABLE IF EXISTS ride_status;
+DROP TABLE IF EXISTS vehicle_type;
+COMMIT;

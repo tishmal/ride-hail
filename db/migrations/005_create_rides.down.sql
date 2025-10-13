@@ -1,0 +1,4 @@
+BEGIN;
+DROP INDEX IF EXISTS idx_rides_status;
+DROP TABLE IF EXISTS rides;
+COMMIT;
