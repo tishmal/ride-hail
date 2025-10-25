@@ -7,6 +7,7 @@ import (
 
 	"ride-hail/internal/config"
 	"ride-hail/internal/db"
+	"ride-hail/internal/microservices/ride"
 	"ride-hail/internal/pkg/log"
 	"ride-hail/internal/shutdown"
 )
@@ -14,14 +15,12 @@ import (
 func main() {
 	logger := log.New("ride-service")
 
-	// 1️⃣ конфиг
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		logger.Error("cfg_load", "failed to load config", "req-123", "ride-456", err)
 		return
 	}
 
-	// 2️⃣ база
 	conn, err := db.ConnectPostgres(
 		cfg.Database.Host,
 		cfg.Database.Port,
@@ -37,10 +36,13 @@ func main() {
 
 	logger.Info("db_connect", "PostgreSQL connection established", "req-id", "ride-456")
 
+	rideServer := ride.NewServer(conn)
+	handler := rideServer.Routes()
+
 	addr := fmt.Sprintf(":%d", cfg.Services.RideService)
 	server := &http.Server{
 		Addr:    addr,
-		Handler: http.DefaultServeMux,
+		Handler: handler,
 	}
 
 	go func() {
