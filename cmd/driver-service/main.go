@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func main() {
 	fmt.Println("driver service is running 🚖")
+	// Блокируем, чтобы контейнер не завершался
+	for {
+		time.Sleep(10 * time.Second)
+	}
 }
