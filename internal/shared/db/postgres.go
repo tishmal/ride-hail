@@ -9,9 +9,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func ConnectPostgres(host string, port int, user, password, name string) (*sql.DB, error) {
+func ConnectPostgres(host, port, user, password, name string) (*sql.DB, error) {
 	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		host, port, user, password, name,
 	)
 

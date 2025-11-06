@@ -9,9 +9,12 @@ import (
 )
 
 func ConnectRabbit(cfg *config.Config) (*amqp091.Connection, *amqp091.Channel, error) {
-	url := fmt.Sprintf("amqp://%s:%s@%s:%d/",
+	url := fmt.Sprintf("amqp://%s:%s@%s:%s/",
 		cfg.RabbitMQ.User, cfg.RabbitMQ.Password,
 		cfg.RabbitMQ.Host, cfg.RabbitMQ.Port)
+
+	fmt.Println("RabbitMQ URL:", url)
+
 	conn, err := amqp091.Dial(url)
 	if err != nil {
 		return nil, nil, err

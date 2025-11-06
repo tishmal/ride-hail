@@ -42,7 +42,7 @@ services:
     container_name: ridehail_migrate
     command: [
       "-path", "/migrations",
-      "-database", "postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable",
+      "-database", "postgres://ridehail_user:ridehail_pass@postgres:5432/ridehail_db?sslmode=disable",
       "up"
     ]
     volumes:
@@ -51,6 +51,7 @@ services:
       postgres:
         condition: service_healthy
     restart: on-failure
+
 
   ride-service:
     build:

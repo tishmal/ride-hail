@@ -11,4 +11,5 @@ func main() {
 	for {
 		time.Sleep(10 * time.Second)
 	}
+	select {}
 }
